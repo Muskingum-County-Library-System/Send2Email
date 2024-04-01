@@ -1,0 +1,11 @@
+{
+  "SMTP_Host": "smtp.gmail.com",
+  "SMTP_Port": 587,
+  "SMTP_User": "email@company.com",
+  "SMTP_Pass": "smtp_password",
+  "Mail_From": "email@company.com",
+  "Mail_Subject": "Mail Subject Text",
+  "Mail_Body": "Mail Body Text",
+  "Mail_Delivery": "Mail Delivery Text + {destination_email}",
+  "File_Extensions": "jpg, jpeg, png, gif, bmp, tif, pdf"
+}
