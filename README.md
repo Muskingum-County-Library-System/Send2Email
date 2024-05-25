@@ -47,6 +47,12 @@ C:\Users\\[USER]\AppData\Local\Send2Email for each user that will be using the a
 * You do not need to include a period before the filetype
 * Default: "jpg, jpeg, png, gif, bmp, tif, pdf"
 
+##### Key_Public
+* This is your public key for encrypting the password when saving the config file.
+* Update this to an 8 character string using letters and numbers but not symbols.
+* You should also update the private_key variable in Program.cs to an 8 character string using letters and numbers but not symbols.
+
+
 The final file should look something like this.
 ```sh
 {
@@ -58,7 +64,8 @@ The final file should look something like this.
   "Mail_Subject": "Mail Subject Text",
   "Mail_Body": "Mail Body Text",
   "Mail_Delivery": "Mail Delivery Text",
-  "File_Extensions": "jpg, jpeg, png, gif, bmp, tif, pdf"
+  "File_Extensions": "jpg, jpeg, png, gif, bmp, tif, pdf",
+  "Key_Public": "byte8Key"
 }
 ```
 
