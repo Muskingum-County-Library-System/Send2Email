@@ -2,7 +2,7 @@
   "SMTP_Host": "smtp.gmail.com",
   "SMTP_Port": 587,
   "SMTP_User": "email@company.com",
-  "SMTP_Pass": "smtp_password",
+  "SMTP_Pass": "",
   "Mail_From": "email@company.com",
   "Mail_Subject": "Mail Subject Text",
   "Mail_Body": "Mail Body Text",
