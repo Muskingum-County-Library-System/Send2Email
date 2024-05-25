@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "BSQKXoo3MpX0OtWH1WUAbG/cC9mx0rGjhOmvRquk7U9DAbeE/z/haJrtoizAsPtlejOn3FrsST/NzvboodLG9Q==",
+  "dgSpecHash": "I7kmGhRqVi8gZTEZBB9tB+FD3L5FgfNOc91HiZd9WxUWHVD9ehLviN7wgHTnSUj6oGuxf02CR0ksdasIHgDuJQ==",
   "success": true,
-  "projectFilePath": "Z:\\Users\\Software\\Git\\Send2Email\\Send2Email\\SendEmail\\Scan2Email.csproj",
+  "projectFilePath": "Z:\\Users\\Software\\Git\\Send2Email\\SendEmail\\Scan2Email.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Dylan Windows PC\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\Dylan Windows PC\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.2.0\\microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512",

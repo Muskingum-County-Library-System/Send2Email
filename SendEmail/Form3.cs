@@ -102,7 +102,6 @@ namespace SendEmail
         #region Save/Load Configuration
 
         // Save the configuration data, will overwrite existing settings
-        // Save the configuration data, will overwrite existing settings
         private void SaveConfig(object sender, EventArgs e)
         {
             string cfg_host = hostTB.Text;
@@ -119,8 +118,10 @@ namespace SendEmail
 
             int cfg_port = Int32.Parse(string_cfg_port);
 
+            string cfg_public_key = Program.key_public; // Get public key
+
             // Create a JSON object with the configuration data
-            Config cfg = new Config(cfg_host, cfg_port, cfg_user, cfg_pass, cfg_from, cfg_subject, cfg_body, cfg_delivery, cfg_extensions);
+            Config cfg = new Config(cfg_host, cfg_port, cfg_user, cfg_pass, cfg_from, cfg_subject, cfg_body, cfg_delivery, cfg_extensions, cfg_public_key);
 
             // Serialize the JSON data so it can be written to a text file
             string[] json = { JsonConvert.SerializeObject(cfg, Formatting.Indented) };
@@ -134,7 +135,6 @@ namespace SendEmail
             form1.Closed += (s, args) => this.Close();
             form1.Show();
         }
-
 
         public static bool LoadConfig() // Boolean method, returns true or false to whatever called LoadConfig
         {
@@ -186,10 +186,10 @@ namespace SendEmail
             Program.mail_delivery = config.Mail_Delivery;
 
             Program.file_extensions = config.File_Extensions;
+            Program.key_public = config.Key_Public; // Load public key
 
             return true;
         }
-
 
         #endregion
 
@@ -258,8 +258,9 @@ namespace SendEmail
             public string Mail_Delivery { get; set; }
 
             public string File_Extensions { get; set; }
+            public string Key_Public { get; set; } // New property
 
-            public Config(string smtp_host, int smtp_port, string smtp_user, string smtp_pass, string mail_from, string mail_subject, string mail_body, string mail_delivery, string file_extensions)
+            public Config(string smtp_host, int smtp_port, string smtp_user, string smtp_pass, string mail_from, string mail_subject, string mail_body, string mail_delivery, string file_extensions, string key_public)
             {
                 SMTP_Host = smtp_host;
                 SMTP_Port = smtp_port;
@@ -272,10 +273,16 @@ namespace SendEmail
                 Mail_Delivery = mail_delivery;
 
                 File_Extensions = file_extensions;
+                Key_Public = key_public; // New property
             }
         }
         #endregion
 
         #endregion
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

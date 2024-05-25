@@ -37,7 +37,7 @@ namespace SendEmail
 
         // Encryption keys (8 bytes for DES)
         public static string key_secret = "8byteKey";
-        public static string key_public = "byte8Key";
+        public static string key_public; // Moved to config file
         #endregion
 
         #region Main Method
