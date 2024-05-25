@@ -21,29 +21,29 @@ namespace SendEmail
 
         #region UI
 
-        //Default info in the info textbox
+        // Default info in the info textbox
         string defaultInfo = "Helpful information about each section will display here when you hover over a textbox with your mouse.";
 
-        public Form3() //Automatically generated codeblock
+        public Form3()
         {
             InitializeComponent();
             SetInfoBox(defaultInfo);
             FillData();
         }
 
-        //This will set the info textbox's contents when you hover over an input field
+        // This will set the info textbox's contents when you hover over an input field
         private void SetInfoBox(string input)
         {
             infoBox.Text = input;
         }
 
-        //Fill the input fields with the data from the config file
+        // Fill the input fields with the data from the config file
         public void FillData()
         {
             hostTB.Text = Program.smtp_host;
             portTB.Text = Program.smtp_port.ToString();
             emailTB.Text = Program.smtp_user;
-            passwordTB.Text = Program.smtp_pass;
+            passwordTB.Text = Program.Decrypt(Program.smtp_pass); // Decrypt password for display
 
             fromTB.Text = Program.mail_from;
             subjectTB.Text = Program.mail_subject;
@@ -53,17 +53,17 @@ namespace SendEmail
             extensionsTB.Text = Program.file_extensions;
         }
 
-        //Detects when mouse hovers over an input field and calls SetInfoBox() with updated info text
+        // Detects when mouse hovers over an input field and calls SetInfoBox() with updated info text
         private void HoverInfo(object sender, EventArgs e)
         {
-            TextBox holder = (TextBox)sender; //Hold onto the sender event that triggered HoverInfo()
-            string holdName = holder.Name; //Get the name of the sender that triggered HoverInfo()
+            TextBox holder = (TextBox)sender; // Hold onto the sender event that triggered HoverInfo()
+            string holdName = holder.Name; // Get the name of the sender that triggered HoverInfo()
             string output;
 
-            switch (holdName) //Switch through the possible input fields and sets the output to the correct values
+            switch (holdName) // Switch through the possible input fields and sets the output to the correct values
             {
                 case "hostTB":
-                    output = "SMTP Host: SMTP Host. At the time of creation, we utalize Google's SMTP server located at smtp.google.com";
+                    output = "SMTP Host: SMTP Host. At the time of creation, we utilize Google's SMTP server located at smtp.google.com";
                     break;
                 case "portTB":
                     output = "SMTP Port: SMTP Port";
@@ -94,20 +94,21 @@ namespace SendEmail
                     break;
             }
 
-            SetInfoBox(output); //Send the output text to the info textbox
+            SetInfoBox(output); // Send the output text to the info textbox
         }
 
         #endregion
 
         #region Save/Load Configuration
 
-        //Save the configuration data, will overwrite existing settings
+        // Save the configuration data, will overwrite existing settings
+        // Save the configuration data, will overwrite existing settings
         private void SaveConfig(object sender, EventArgs e)
         {
             string cfg_host = hostTB.Text;
             string string_cfg_port = portTB.Text;
             string cfg_user = emailTB.Text;
-            string cfg_pass = passwordTB.Text;
+            string cfg_pass = Program.Encrypt(passwordTB.Text); // Encrypt the password
 
             string cfg_from = fromTB.Text;
             string cfg_subject = subjectTB.Text;
@@ -118,54 +119,77 @@ namespace SendEmail
 
             int cfg_port = Int32.Parse(string_cfg_port);
 
-            //Create a JSON object with the configuration data
+            // Create a JSON object with the configuration data
             Config cfg = new Config(cfg_host, cfg_port, cfg_user, cfg_pass, cfg_from, cfg_subject, cfg_body, cfg_delivery, cfg_extensions);
 
-            //Serialize the JSON data so it can be written to a text file
+            // Serialize the JSON data so it can be written to a text file
             string[] json = { JsonConvert.SerializeObject(cfg, Formatting.Indented) };
 
-            //Write Config file to Program.appPath (default is Appdata/Local/Send2Email)
+            // Write Config file to Program.appPath (default is Appdata/Local/Send2Email)
             WriteFile(json, Program.configName, Program.configFileExt);
+
+            // Close Form3 and open Form1
+            this.Hide();
+            var form1 = new Form1();
+            form1.Closed += (s, args) => this.Close();
+            form1.Show();
         }
 
 
-        public static bool LoadConfig() //Boolean method, returns true or false to whatever called LoadConfig
+        public static bool LoadConfig() // Boolean method, returns true or false to whatever called LoadConfig
         {
-            //Config filepath
-            string cfg = Program.appPath + "/" + Program.configFileName;
+            // Config filepath in AppData
+            string cfgFilePath = Path.Combine(Program.appPath, Program.configFileName);
+            // Example config filepath in the bin directory of the project
+            string exampleCfgFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "example.cfg.json");
 
-            //Check if config file exists
-            bool cExist = File.Exists(cfg);
+            // Check if config file exists in AppData
+            bool cExist = File.Exists(cfgFilePath);
 
-            if (!cExist) //If a config doesn't exist
+            if (!cExist) // If a config doesn't exist
             {
-                return false; //Return false for LoadConfig boolean
+                // Check if example config exists in the bin directory of the project
+                if (File.Exists(exampleCfgFilePath))
+                {
+                    // Ensure the directory exists
+                    if (!Directory.Exists(Program.appPath))
+                    {
+                        Directory.CreateDirectory(Program.appPath);
+                    }
+
+                    // Copy the example config to the AppData config file path
+                    File.Copy(exampleCfgFilePath, cfgFilePath);
+                }
+                else
+                {
+                    // Display an error message before closing the application
+                    MessageBox.Show("A critical error has occurred. Example configuration file is missing. Please contact IT to resolve this issue.");
+                    return false; // Return false for LoadConfig boolean
+                }
             }
-            else //Config file does exist
-            {
-                //Create an array to store the configuration file line by line
-                string[] cfgFile = ReadFile("cfg", "json");
-                string cfgData = ConvertStringArray(cfgFile);
 
-                //Get the first line of our configuration
+            // Create an array to store the configuration file line by line
+            string[] cfgFile = ReadFile("cfg", "json");
+            string cfgData = ConvertStringArray(cfgFile);
 
-                Config config = JsonConvert.DeserializeObject<Config>(cfgData);
+            // Get the first line of our configuration
+            Config config = JsonConvert.DeserializeObject<Config>(cfgData);
 
-                Program.smtp_host = config.SMTP_Host;
-                Program.smtp_port = config.SMTP_Port;
-                Program.smtp_user = config.SMTP_User;
-                Program.smtp_pass = config.SMTP_Pass;
+            Program.smtp_host = config.SMTP_Host;
+            Program.smtp_port = config.SMTP_Port;
+            Program.smtp_user = config.SMTP_User;
+            Program.smtp_pass = config.SMTP_Pass;
 
-                Program.mail_from = config.Mail_From;
-                Program.mail_body = config.Mail_Body;
-                Program.mail_subject = config.Mail_Subject;
-                Program.mail_delivery = config.Mail_Delivery;
+            Program.mail_from = config.Mail_From;
+            Program.mail_body = config.Mail_Body;
+            Program.mail_subject = config.Mail_Subject;
+            Program.mail_delivery = config.Mail_Delivery;
 
-                Program.file_extensions = config.File_Extensions;
+            Program.file_extensions = config.File_Extensions;
 
-                return true;
-            }
+            return true;
         }
+
 
         #endregion
 
@@ -174,7 +198,6 @@ namespace SendEmail
         // Create a string array with the lines of text
         public static void WriteFile(string[] data, string fileName, string fileExtension)
         {
-
             string temp = "";
             string file = fileName + "." + fileExtension;
 
@@ -188,7 +211,6 @@ namespace SendEmail
                 outputFile.WriteLine(temp);
             }
         }
-
 
         public static string[] ReadFile(string fileName, string fileExtension)
         {
@@ -210,11 +232,11 @@ namespace SendEmail
         /* Takes a multi-line file and turns it into a single-line string
          * This is really only here because the JSON files are pretty-printed
          * for human readability, but it's much easier to work with the JSON
-         * data as a single string rather than an array of string data*/
+         * data as a single string rather than an array of string data */
         public static string ConvertStringArray(string[] input)
         {
             string output = "";
-            foreach (string line in input) //Loop through input and append it to the end of output
+            foreach (string line in input) // Loop through input and append it to the end of output
             {
                 output += line;
             }
@@ -223,10 +245,6 @@ namespace SendEmail
         }
 
         #region JSON Config
-        /* Sources 
-         * https://www.newtonsoft.com/json/help/html/SerializingJSON.htm
-         * https://www.newtonsoft.com/json/help/html/SerializeWithJsonSerializerToFile.htm
-         */
         public class Config
         {
             public string SMTP_Host { get; set; }
@@ -256,11 +274,8 @@ namespace SendEmail
                 File_Extensions = file_extensions;
             }
         }
-
         #endregion
 
         #endregion
-
-
     }
 }

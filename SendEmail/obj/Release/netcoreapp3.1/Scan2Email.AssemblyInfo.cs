@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Scan2Email")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+daf994e3473892e2d3f416244465215be628e416")]
 [assembly: System.Reflection.AssemblyProductAttribute("Scan2Email")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Scan2Email")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
