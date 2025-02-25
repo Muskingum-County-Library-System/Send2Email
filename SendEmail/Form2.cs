@@ -28,7 +28,7 @@ namespace SendEmail
         {
             string input = textBox1.Text;
             string encryptedInput = Program.Encrypt(input); // Encrypt the user input
-            if (encryptedInput == Program.smtp_pass) // If encrypted password is correct
+            if (encryptedInput == Program.config_pass) // If encrypted password is correct
             {
                 this.Hide(); // Hide Form2
                 var form3 = new Form3(); // Create Form3

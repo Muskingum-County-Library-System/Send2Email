@@ -32,8 +32,8 @@ namespace SendEmail
         public static string mail_from;
         public static string mail_subject;
         public static string mail_body;
-        public static string mail_delivery;
         public static string file_extensions;
+        public static string config_pass;
 
         // Encryption keys (8 bytes for DES)
         public static string key_secret = "8byteKey";
@@ -52,7 +52,7 @@ namespace SendEmail
             bool cont = Form3.LoadConfig(); // Load Configuration method
             if (cont) // If Config exists
             {
-                if (string.IsNullOrEmpty(smtp_pass)) // Check if password is empty
+                if (string.IsNullOrEmpty(config_pass)) // Check if password is empty
                 {
                     // Run first time setup
                     Application.Run(new Form3());
@@ -259,11 +259,11 @@ namespace SendEmail
                     mail.Attachments.Add(attachment); // Attach the new attachment to the email
                 }
 
-                SmtpServer.Credentials = new System.Net.NetworkCredential(smtp_user, smtp_pass); // Login to SMTP
+                SmtpServer.Credentials = new System.Net.NetworkCredential(smtp_user, Program.Decrypt(smtp_pass)); // Login to SMTP
                 SmtpServer.EnableSsl = true; // Use SSL Encryption
 
                 SmtpServer.Send(mail); // Send our mail variable
-                MessageBox.Show(mail_delivery + sendTo); // Popup informs user where the email was sent
+                MessageBox.Show("Your scans have been sent to " + sendTo); // Popup informs user where the email was sent
             }
             catch (Exception ex) // If the Try fails the catch will output this error message.
             {

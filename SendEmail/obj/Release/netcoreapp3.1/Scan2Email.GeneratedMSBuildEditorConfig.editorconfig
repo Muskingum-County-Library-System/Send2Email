@@ -6,6 +6,4 @@ build_property.ApplicationHighDpiMode =
 build_property.ApplicationUseCompatibleTextRendering = 
 build_property.ApplicationVisualStyles = 
 build_property.RootNamespace = Scan2Email
-build_property.ProjectDir = Z:\Users\Software\Git\Send2Email\SendEmail\
-build_property.EnableComHosting = 
-build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.ProjectDir = C:\Users\Dylan\Desktop\Send2Email\SendEmail\

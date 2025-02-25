@@ -1,15 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
-using System.Linq;
-using System.Security.Cryptography;
 
 namespace SendEmail
 {
@@ -18,6 +10,9 @@ namespace SendEmail
         /*
          * Form3 is the configuration window for Send2Email
          */
+
+        public bool showingSMTPPass = false;
+        public bool showingConfigPass = false;
 
         #region UI
 
@@ -48,7 +43,8 @@ namespace SendEmail
             fromTB.Text = Program.mail_from;
             subjectTB.Text = Program.mail_subject;
             bodyTB.Text = Program.mail_body;
-            deliveryTB.Text = Program.mail_delivery;
+
+            configPasswordTB.Text = Program.Decrypt(Program.config_pass); // Decrypt password for display
 
             extensionsTB.Text = Program.file_extensions;
         }
@@ -58,6 +54,7 @@ namespace SendEmail
         {
             TextBox holder = (TextBox)sender; // Hold onto the sender event that triggered HoverInfo()
             string holdName = holder.Name; // Get the name of the sender that triggered HoverInfo()
+
             string output;
 
             switch (holdName) // Switch through the possible input fields and sets the output to the correct values
@@ -83,11 +80,11 @@ namespace SendEmail
                 case "bodyTB":
                     output = "Mail Body: This is what will be put into the body of the email";
                     break;
-                case "deliveryTB":
-                    output = "Mail Delivery: is the message that will appear on screen once the user has successfully emailed themselves";
-                    break;
                 case "extensionsTB":
                     output = "File Extensions: This determines the types of files that will be scraped from the Pictures folder.\r\nSeparate each entry with a comma, you do not need to include the period for any extensions.\r\nDefaults: jpg, jpeg, png, gif, bmp, tif, pdf";
+                    break;
+                case "configPasswordTB":
+                    output = "Config Password: The password to access the settings.";
                     break;
                 default:
                     output = defaultInfo;
@@ -95,6 +92,23 @@ namespace SendEmail
             }
 
             SetInfoBox(output); // Send the output text to the info textbox
+        }
+
+        public bool toggleHiddenPW(bool isShowing, TextBox passTextBox)
+        {
+            isShowing = !isShowing; // Toggle the boolean value
+            passTextBox.PasswordChar = isShowing ? '\0' : '●'; // Set ● when enabled, empty when disabled
+            return isShowing; // Return updated value
+        }
+
+        public void toggleShowConfig(object sender, EventArgs e)
+        {
+            showingConfigPass = toggleHiddenPW(showingConfigPass, configPasswordTB);
+        }
+
+        private void toggleShowSMTP(object sender, EventArgs e)
+        {
+            showingSMTPPass = toggleHiddenPW(showingSMTPPass, passwordTB);
         }
 
         #endregion
@@ -107,21 +121,21 @@ namespace SendEmail
             string cfg_host = hostTB.Text;
             string string_cfg_port = portTB.Text;
             string cfg_user = emailTB.Text;
-            string cfg_pass = Program.Encrypt(passwordTB.Text); // Encrypt the password
+            string cfg_pass = Program.Encrypt(passwordTB.Text); // Encrypt the SMTP password
 
             string cfg_from = fromTB.Text;
             string cfg_subject = subjectTB.Text;
             string cfg_body = bodyTB.Text;
-            string cfg_delivery = deliveryTB.Text;
 
             string cfg_extensions = extensionsTB.Text;
+            string cfg_config_pass = Program.Encrypt(configPasswordTB.Text); // Encrypt the config password
 
             int cfg_port = Int32.Parse(string_cfg_port);
 
             string cfg_public_key = Program.key_public; // Get public key
 
             // Create a JSON object with the configuration data
-            Config cfg = new Config(cfg_host, cfg_port, cfg_user, cfg_pass, cfg_from, cfg_subject, cfg_body, cfg_delivery, cfg_extensions, cfg_public_key);
+            Config cfg = new Config(cfg_host, cfg_port, cfg_user, cfg_pass, cfg_from, cfg_subject, cfg_body, cfg_extensions, cfg_config_pass, cfg_public_key);
 
             // Serialize the JSON data so it can be written to a text file
             string[] json = { JsonConvert.SerializeObject(cfg, Formatting.Indented) };
@@ -134,6 +148,7 @@ namespace SendEmail
             var form1 = new Form1();
             form1.Closed += (s, args) => this.Close();
             form1.Show();
+            LoadConfig(); //Load the new config so that we process any updates the user made.
         }
 
         public static bool LoadConfig() // Boolean method, returns true or false to whatever called LoadConfig
@@ -183,7 +198,8 @@ namespace SendEmail
             Program.mail_from = config.Mail_From;
             Program.mail_body = config.Mail_Body;
             Program.mail_subject = config.Mail_Subject;
-            Program.mail_delivery = config.Mail_Delivery;
+
+            Program.config_pass = config.Config_Pass;
 
             Program.file_extensions = config.File_Extensions;
             Program.key_public = config.Key_Public; // Load public key
@@ -251,16 +267,14 @@ namespace SendEmail
             public int SMTP_Port { get; set; }
             public string SMTP_User { get; set; }
             public string SMTP_Pass { get; set; }
-
             public string Mail_From { get; set; }
             public string Mail_Subject { get; set; }
             public string Mail_Body { get; set; }
-            public string Mail_Delivery { get; set; }
-
+            public string Config_Pass { get; set; }
             public string File_Extensions { get; set; }
             public string Key_Public { get; set; } // New property
 
-            public Config(string smtp_host, int smtp_port, string smtp_user, string smtp_pass, string mail_from, string mail_subject, string mail_body, string mail_delivery, string file_extensions, string key_public)
+            public Config(string smtp_host, int smtp_port, string smtp_user, string smtp_pass, string mail_from, string mail_subject, string mail_body, string file_extensions, string config_pass, string key_public)
             {
                 SMTP_Host = smtp_host;
                 SMTP_Port = smtp_port;
@@ -270,19 +284,14 @@ namespace SendEmail
                 Mail_From = mail_from;
                 Mail_Subject = mail_subject;
                 Mail_Body = mail_body;
-                Mail_Delivery = mail_delivery;
 
                 File_Extensions = file_extensions;
+                Config_Pass = config_pass;
                 Key_Public = key_public; // New property
             }
         }
         #endregion
 
         #endregion
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

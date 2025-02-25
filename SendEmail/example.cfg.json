@@ -6,7 +6,7 @@
   "Mail_From": "email@company.com",
   "Mail_Subject": "Mail Subject Text",
   "Mail_Body": "Mail Body Text",
-  "Mail_Delivery": "Mail Delivery Text + {destination_email}",
+  "Config_Pass": "",
   "File_Extensions": "jpg, jpeg, png, gif, bmp, tif, pdf",
   "Key_Public": "byte8Key"
 }
