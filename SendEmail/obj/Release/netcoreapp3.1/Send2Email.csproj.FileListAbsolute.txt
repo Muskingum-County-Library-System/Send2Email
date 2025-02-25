@@ -31,3 +31,4 @@ C:\Users\Dylan\Desktop\Send2Email\SendEmail\obj\Release\netcoreapp3.1\Send2Email
 C:\Users\Dylan\Desktop\Send2Email\SendEmail\obj\Release\netcoreapp3.1\Send2Email.dll
 C:\Users\Dylan\Desktop\Send2Email\SendEmail\obj\Release\netcoreapp3.1\Send2Email.pdb
 C:\Users\Dylan\Desktop\Send2Email\SendEmail\obj\Release\netcoreapp3.1\Send2Email.genruntimeconfig.cache
+C:\Users\Dylan\Desktop\Send2Email\SendEmail\bin\Release\netcoreapp3.1\example.cfg.json

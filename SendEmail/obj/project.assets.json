@@ -474,9 +474,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Dylan\\Desktop\\Send2Email\\SendEmail\\Scan2Email.csproj",
-      "projectName": "Scan2Email",
-      "projectPath": "C:\\Users\\Dylan\\Desktop\\Send2Email\\SendEmail\\Scan2Email.csproj",
+      "projectUniqueName": "C:\\Users\\Dylan\\Desktop\\Send2Email\\SendEmail\\Send2Email.csproj",
+      "projectName": "Send2Email",
+      "projectPath": "C:\\Users\\Dylan\\Desktop\\Send2Email\\SendEmail\\Send2Email.csproj",
       "packagesPath": "C:\\Users\\Dylan\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Dylan\\Desktop\\Send2Email\\SendEmail\\obj\\",
       "projectStyle": "PackageReference",

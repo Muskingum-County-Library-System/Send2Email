@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30611.23
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scan2Email", "SendEmail\Scan2Email.csproj", "{1A02CCC7-F2E8-46BE-8329-FA552F5EEBFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Send2Email", "SendEmail\Send2Email.csproj", "{1A02CCC7-F2E8-46BE-8329-FA552F5EEBFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
