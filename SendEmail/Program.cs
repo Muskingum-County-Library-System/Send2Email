@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace SendEmail
 {
@@ -36,8 +37,8 @@ namespace SendEmail
         public static string config_pass;
 
         // Encryption keys (8 bytes for DES)
-        public static string key_secret = "8byteKey";
-        public static string key_public; // Moved to config file
+        public static string EncryptionKey = "8byteKey";
+        
         #endregion
 
         #region Main Method
@@ -72,77 +73,66 @@ namespace SendEmail
         #endregion
 
         #region Encryption Methods
-        public static string Encrypt(string input)
+        public static string Encrypt(string plainText)
         {
-            try
-            {
-                string textToEncrypt = input;
-                string ToReturn = "";
-                byte[] secretkeyByte = System.Text.Encoding.UTF8.GetBytes(key_secret);
-                byte[] publickeybyte = System.Text.Encoding.UTF8.GetBytes(key_public);
-                byte[] inputbyteArray = System.Text.Encoding.UTF8.GetBytes(textToEncrypt);
+            if (string.IsNullOrEmpty(plainText))
+                return string.Empty;
 
-                using (DESCryptoServiceProvider des = new DESCryptoServiceProvider())
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = DeriveKey(EncryptionKey);
+                aes.GenerateIV(); // Generate a unique IV
+
+                using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
+                using (var ms = new MemoryStream())
                 {
-                    des.Mode = CipherMode.CBC;
-                    des.Padding = PaddingMode.PKCS7;
-                    des.Key = publickeybyte;
-                    des.IV = secretkeyByte;
-
-                    using (MemoryStream ms = new MemoryStream())
+                    ms.Write(aes.IV, 0, aes.IV.Length); // Store IV at the start
+                    using (var cryptoStream = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    using (var writer = new StreamWriter(cryptoStream))
                     {
-                        using (CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(), CryptoStreamMode.Write))
-                        {
-                            cs.Write(inputbyteArray, 0, inputbyteArray.Length);
-                            cs.FlushFinalBlock();
-                            ToReturn = Convert.ToBase64String(ms.ToArray());
-                        }
+                        writer.Write(plainText);
                     }
+                    return Convert.ToBase64String(ms.ToArray());
                 }
-
-                return ToReturn;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex.InnerException);
             }
         }
 
-        public static string Decrypt(string input)
+
+        public static string Decrypt(string encryptedText)
         {
-            try
-            {
-                string textToDecrypt = input;
-                string ToReturn = "";
-                byte[] privatekeyByte = System.Text.Encoding.UTF8.GetBytes(key_secret);
-                byte[] publickeybyte = System.Text.Encoding.UTF8.GetBytes(key_public);
-                byte[] inputbyteArray = Convert.FromBase64String(textToDecrypt.Replace(" ", "+"));
+            if (string.IsNullOrEmpty(encryptedText))
+                return string.Empty;
 
-                using (DESCryptoServiceProvider des = new DESCryptoServiceProvider())
+            byte[] cipherTextBytes = Convert.FromBase64String(encryptedText);
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = DeriveKey(EncryptionKey);
+                byte[] iv = new byte[aes.BlockSize / 8];
+
+                if (cipherTextBytes.Length < iv.Length)
+                    return string.Empty; // Prevents IV-related decryption errors
+
+                Array.Copy(cipherTextBytes, iv, iv.Length); // Extract stored IV
+
+                using (var decryptor = aes.CreateDecryptor(aes.Key, iv))
+                using (var ms = new MemoryStream(cipherTextBytes, iv.Length, cipherTextBytes.Length - iv.Length))
+                using (var cryptoStream = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                using (var reader = new StreamReader(cryptoStream))
                 {
-                    des.Mode = CipherMode.CBC;
-                    des.Padding = PaddingMode.PKCS7;
-                    des.Key = publickeybyte;
-                    des.IV = privatekeyByte;
-
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        using (CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(), CryptoStreamMode.Write))
-                        {
-                            cs.Write(inputbyteArray, 0, inputbyteArray.Length);
-                            cs.FlushFinalBlock();
-                            ToReturn = System.Text.Encoding.UTF8.GetString(ms.ToArray());
-                        }
-                    }
+                    return reader.ReadToEnd();
                 }
-
-                return ToReturn;
-            }
-            catch (Exception ae)
-            {
-                throw new Exception(ae.Message, ae.InnerException);
             }
         }
+
+        private static byte[] DeriveKey(string passphrase)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                return sha256.ComputeHash(Encoding.UTF8.GetBytes(passphrase));
+            }
+        }
+
+
         #endregion
 
         #region Email Methods

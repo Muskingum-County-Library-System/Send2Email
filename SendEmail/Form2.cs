@@ -27,8 +27,8 @@ namespace SendEmail
         private void PassButtonClick(object sender, EventArgs e)
         {
             string input = textBox1.Text;
-            string encryptedInput = Program.Encrypt(input); // Encrypt the user input
-            if (encryptedInput == Program.config_pass) // If encrypted password is correct
+            string decryptedConfigPass = Program.Decrypt(Program.config_pass);
+            if (input == decryptedConfigPass)
             {
                 this.Hide(); // Hide Form2
                 var form3 = new Form3(); // Create Form3
