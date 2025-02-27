@@ -7,6 +7,5 @@
   "Mail_Subject": "Mail Subject Text",
   "Mail_Body": "Mail Body Text",
   "Config_Pass": "",
-  "File_Extensions": "jpg, jpeg, png, gif, bmp, tif, pdf",
-  "Key_Public": "byte8Key"
+  "File_Extensions": "jpg, jpeg, png, gif, bmp, tif, pdf"
 }
